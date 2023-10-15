@@ -20,17 +20,20 @@ object Protocol:
   enum ClientCommand:
     case RequestUsername(name: Username)
     case SendMessage(value: String)
+    case DirectMessage(name: Username, message: String)
 
   object ClientCommand:
     given Codec[ClientCommand] = discriminated[ClientCommand]
       .by(uint8)
       .typecase(1, username.as[RequestUsername])
       .typecase(2, utf8_32.as[SendMessage])
+      .typecase(3, (username :: utf8_32).as[DirectMessage])
 
   enum ServerCommand:
     case SetUsername(name: Username)
     case Alert(text: String)
     case Message(name: Username, text: String)
+    case DirectMessage(name: Username, message: String)
     case Disconnect
 
   object ServerCommand:
@@ -40,3 +43,4 @@ object Protocol:
       .typecase(130, utf8_32.as[Alert])
       .typecase(131, (username :: utf8_32).as[Message])
       .typecase(132, provide(Disconnect))
+      .typecase(133, (username :: utf8_32).as[DirectMessage])

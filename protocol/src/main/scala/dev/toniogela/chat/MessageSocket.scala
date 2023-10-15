@@ -11,7 +11,7 @@ import com.comcast.ip4s.*
 trait MessageSocket[In, Out]:
   def read: Stream[IO, In]
   def write(out: Out): IO[Unit]
-  def address: IO[SocketAddress[IpAddress]] // * Omit in talk
+  def address: IO[SocketAddress[IpAddress]]
 
 object MessageSocket:
 

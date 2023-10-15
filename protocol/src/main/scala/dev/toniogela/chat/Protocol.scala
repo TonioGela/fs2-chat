@@ -12,7 +12,7 @@ case class Username(name: String) extends Ordered[Username]:
 object Username:
   given Eq[Username] = Eq.fromUniversalEquals[Username]
 
-final class UserQuit extends Exception with NoStackTrace
+object UserQuit extends Exception with NoStackTrace
 
 object Protocol:
   private val username: Codec[Username] = utf8_32.as[Username]
@@ -42,5 +42,5 @@ object Protocol:
       .typecase(129, username.as[SetUsername])
       .typecase(130, utf8_32.as[Alert])
       .typecase(131, (username :: utf8_32).as[Message])
-      .typecase(132, provide(Disconnect))
-      .typecase(133, (username :: utf8_32).as[DirectMessage])
+      .typecase(132, (username :: utf8_32).as[DirectMessage])
+      .typecase(133, provide(Disconnect))

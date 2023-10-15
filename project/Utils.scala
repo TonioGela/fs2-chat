@@ -1,14 +1,20 @@
-import sbt.Project
+import sbt.*
+import sbtcrossproject.*
 import spray.revolver.RevolverPlugin
-import sbtcrossproject.CrossProject
+import scala.scalanative.sbtplugin.ScalaNativePlugin
 
 object Utils {
 
   implicit class RichProject(private val p: Project) extends AnyVal {
-    def noRevolver: Project = p.disablePlugins(RevolverPlugin)
+
+    def root(c: CompositeProject*): Project = p.in(file(".")).disablePlugins(
+      RevolverPlugin
+    ).aggregate(c.flatMap(_.componentProjects).map(_.project): _*)
+
+    def native: Project = p.enablePlugins(ScalaNativePlugin).disablePlugins(RevolverPlugin)
   }
 
   implicit class RichCrossProject(private val p: CrossProject.Builder) extends AnyVal {
-    def noRevolver: CrossProject = p.disablePlugins(RevolverPlugin)
+    def pure: CrossProject = p.crossType(CrossType.Pure).disablePlugins(RevolverPlugin)
   }
 }

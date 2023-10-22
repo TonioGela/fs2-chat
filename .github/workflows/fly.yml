@@ -35,6 +35,6 @@ jobs:
         run: sbt server/Docker/publishLocal
       
       - name: Fly deploy
-        run: flyctl deploy --local-only --yes
+        run: flyctl deploy --vm-cpu-kind "shared" --vm-cpus "1" --local-only --yes
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

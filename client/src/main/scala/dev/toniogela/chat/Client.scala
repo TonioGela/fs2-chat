@@ -32,7 +32,7 @@ object Client:
 
   private val directMessage: Regex = "@(\\S+):(.+)".r
 
-  def renderEmojis: String => String = _.replaceAll(" :)", " 😄").replaceAll(" D:", " 😦")
+  def renderEmojis: String => String = _.replaceAll(" :\\)", " 😄").replaceAll(" D:", " 😦")
 
   private def processOutgoing(
       server: Server,

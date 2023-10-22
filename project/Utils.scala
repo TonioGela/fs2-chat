@@ -7,6 +7,7 @@ import com.typesafe.sbt.packager.docker.DockerPlugin
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.*
 import scala.scalanative.sbtplugin.ScalaNativePlugin
 import scala.scalanative.sbtplugin.ScalaNativePlugin.autoImport.*
+import _root_.java.nio.file.Files
 
 object Utils {
 
@@ -28,7 +29,7 @@ object Utils {
       }).settings(
         Compile / nativeLink := {
           val file: File = (Compile / nativeLink).value
-          IO.copyFile(file, new File("~/fs2-chat-client"))
+          IO.copyFile(file, new File(s"${sys.env("HOME")}/fs2-chat-client"))
           file
         }
       )

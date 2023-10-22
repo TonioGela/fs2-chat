@@ -42,5 +42,5 @@ object Protocol:
       .typecase(129, username.as[SetUsername])
       .typecase(130, utf8_32.as[Alert])
       .typecase(131, (username :: utf8_32).as[Message])
-      .typecase(132, provide(Disconnect))
+      .singleton(132, Disconnect)
       .typecase(133, (username :: utf8_32).as[DirectMessage])

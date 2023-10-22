@@ -22,6 +22,7 @@ lazy val protocol = crossProject(JVMPlatform, NativePlatform).pure
 
 lazy val server = project.in(file("server"))
   .dependsOn(protocol.jvm)
+  .dockerized
   .settings(
     name                 := "fs2-chat-server",
     run / fork           := true,

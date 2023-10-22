@@ -1,0 +1,19 @@
+app = "fs2-chat-server"
+kill_signal = "SIGINT"
+
+[build]
+  image = "localhost/fs2-chat-server:0.1.0-SNAPSHOT"
+
+[[services]]
+  internal_port = 5555
+  processes = ["app"]
+  protocol = "tcp"
+
+  [services.concurrency]
+    hard_limit = 128
+    soft_limit = 100
+    type = "requests"
+
+  [[services.ports]]
+    handlers = ["tcp"]
+    port = 5555

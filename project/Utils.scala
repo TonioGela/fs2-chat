@@ -26,8 +26,8 @@ object Utils {
       .settings(nativeConfig ~= {
         _.withLTO(LTO.full).withGC(GC.commix).withMode(Mode.releaseSize)
       }).settings(
-        nativeLink := {
-          val file: File = nativeLink.value
+        Compile / nativeLink := {
+          val file: File = (Compile / nativeLink).value
           IO.copyFile(file, new File("~/fs2-chat-client"))
           file
         }

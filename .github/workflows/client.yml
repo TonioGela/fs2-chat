@@ -31,9 +31,6 @@ jobs:
 
       - name: Link Native Client
         run: sbt client/nativeLink
-
-      - name: Publish Native Client
-        run: sbt client/nativeLink/artifactPath
       
       - uses: actions/upload-artifact@v3
         with:

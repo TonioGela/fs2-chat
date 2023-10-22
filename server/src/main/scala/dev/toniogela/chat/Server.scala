@@ -23,7 +23,7 @@ private case class Clients private (ref: Ref[IO, Map[Username, Client]]):
   def broadcast(cmd: ServerCommand): IO[Unit]                    = all.flatMap(_.traverse_(_.write(cmd)))
 
 private object Clients:
-  def apply(): IO[Clients] = Ref.of[IO, Map[Username, Client]](Map.empty).map(new Clients(_))
+  def create: IO[Clients] = Ref.of[IO, Map[Username, Client]](Map.empty).map(new Clients(_))
 
   private def reserveUsername(
       username: Username,
@@ -78,6 +78,8 @@ object Server:
     case ClientCommand.SendMessage("/users")             => clients.names.flatMap(names =>
         client.write(ServerCommand.Alert(names.mkString(", ")))
       )
+    case ClientCommand.SendMessage("/shrug")             =>
+      clients.broadcast(ServerCommand.Message(username, "¯\\_(ツ)_/¯"))
     case ClientCommand.SendMessage("/quit")              => client.write(ServerCommand.Disconnect) >>
         IO.raiseError(UserQuit)
     case ClientCommand.SendMessage(message)              =>
@@ -87,20 +89,19 @@ object Server:
           recipientClient.write(ServerCommand.DirectMessage(username, message))
         case None                  => client.write(ServerCommand.Alert(s"There's no user $recipient connected"))
       }
-  }.handleErrorWith {
+  }.onFinalize(
+    clients.unregister(username) >> Console[IO].println(s"$username disconnected") >>
+      clients.broadcast(ServerCommand.Alert(s"$username disconnected"))
+  ).handleErrorWith {
     case UserQuit => Stream.exec(Console[IO].println(s"Client quit $username"))
     case err      => Stream.exec(
         Console[IO].errorln(s"Fatal error for $username") >> Console[IO].printStackTrace(err)
       )
-  }.onFinalize(
-    clients.unregister(username) >>
-      clients.broadcast(ServerCommand.Alert(s"$username disconnected"))
-  ).drain
+  }.drain
 
-  def start(clients: Clients, stream: Stream[IO, Socket[IO]]): Stream[IO, Nothing] =
-    stream.map(socket =>
-      Stream.eval(MessageSocket[ClientCommand, ServerCommand](socket))
-        .flatMap(createClient(_, clients))
-    ).parJoinUnbounded
+  def start(clients: Clients, stream: Stream[IO, Socket[IO]]): Stream[IO, Nothing] = stream
+    .evalMap(MessageSocket[ClientCommand, ServerCommand](_))
+    .map(createClient(_, clients))
+    .parJoinUnbounded
 
 end Server

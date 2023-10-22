@@ -2,7 +2,7 @@ app = "fs2-chat-server"
 kill_signal = "SIGINT"
 
 [build]
-  image = "localhost/fs2-chat-server:0.1.0-SNAPSHOT"
+  image = "fs2-chat-server:0.1.0-SNAPSHOT"
 
 [[services]]
   internal_port = 5555

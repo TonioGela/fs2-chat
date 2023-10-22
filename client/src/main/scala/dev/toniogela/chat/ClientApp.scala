@@ -11,7 +11,7 @@ val port: Opts[Port] = Opts.option[Int]("port", "The port to connect to")
   .mapValidated(Port.fromInt(_).toValidNel("Invalid port number"))
 
 val hostname: Opts[Hostname] = Opts.option[String]("hostname", "The hostname to connect to")
-  .withDefault("http://scala.show")
+  .withDefault("scala.show")
   .mapValidated(Hostname.fromString(_).toValidNel("Invalid hostname"))
 
 val ip: Opts[IpAddress] = Opts.option[String]("ip", "The ip address to connect to")

@@ -1,0 +1,42 @@
+name: Build client
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Build Client
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        java: [temurin@17]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout current branch (full)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java (temurin@17)
+        id: setup-java-temurin-17
+        if: matrix.java == 'temurin@17'
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: sbt
+
+      - name: Link Native Client
+        run: sbt client/nativeLink
+
+      - name: Publish Native Client
+        run: sbt client/nativeLink/artifactPath
+      
+      - uses: actions/upload-artifact@v3
+        with:
+          name: fs2-chat-client-${{ matrix.os }}
+          path: ~/fs2-chat-client
+          if-no-files-found: error

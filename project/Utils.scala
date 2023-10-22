@@ -24,8 +24,14 @@ object Utils {
 
     def native: Project = p.enablePlugins(ScalaNativePlugin).disablePlugins(RevolverPlugin)
       .settings(nativeConfig ~= {
-        _.withLTO(LTO.full).withGC(GC.commix).withMode(Mode.releaseFull)
-      })
+        _.withLTO(LTO.full).withGC(GC.commix).withMode(Mode.releaseSize)
+      }).settings(
+        nativeLink := {
+          val file: File = nativeLink.value
+          IO.copyFile(file, new File("~/fs2-chat-client"))
+          file
+        }
+      )
   }
 
   implicit class RichCrossProject(private val p: CrossProject.Builder) extends AnyVal {

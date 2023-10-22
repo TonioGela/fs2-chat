@@ -32,6 +32,8 @@ object Client:
 
   private val directMessage: Regex = "@(\\S+):(.+)".r
 
+  def renderEmojis: String => String = _.replaceAll(" :)", " 😄").replaceAll(" D:", " 😦")
+
   private def processOutgoing(
       server: Server,
       printer: Printer
@@ -40,8 +42,8 @@ object Client:
     .unNone
     .map {
       case directMessage(name, msg) if name.trim.nonEmpty && msg.trim.nonEmpty =>
-        ClientCommand.DirectMessage(Username(name.trim), msg.trim)
-      case msg                                                                 => ClientCommand.SendMessage(msg)
+        ClientCommand.DirectMessage(Username(name.trim), renderEmojis(msg.trim))
+      case msg                                                                 => ClientCommand.SendMessage(renderEmojis(msg))
     }
     .evalMap(server.write)
 

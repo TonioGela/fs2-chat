@@ -27,7 +27,7 @@ object Printer:
       def alert(msg: String): IO[Unit] = println(s"📢 $GREEN$msg$RESET")
 
       def privateMessage(username: Username, message: String) =
-        println(s"$MAGENTA${username.name} says: $message")
+        println(s"$MAGENTA${username.name} says: $message$RESET")
 
       def errorln(msg: String): IO[Unit] = println(s"❌ $RED$msg$RESET")
 

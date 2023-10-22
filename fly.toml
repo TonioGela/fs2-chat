@@ -15,5 +15,4 @@ kill_signal = "SIGINT"
     type = "requests"
 
   [[services.ports]]
-    handlers = ["tcp"]
     port = 5555

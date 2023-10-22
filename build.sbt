@@ -32,10 +32,3 @@ lazy val server = project.in(file("server"))
 lazy val client = project.in(file("client")).native
   .dependsOn(protocol.native)
   .settings(name := "fs2-chat-client")
-
-// .settings(nativeConfig ~= { c =>
-//   c
-//     // .withLTO(LTO.none)
-//     .withLinkingOptions("-L/opt/homebrew/opt/openssl@3/lib" +: c.linkingOptions)
-//   // .withMode(Mode.debug)
-// })

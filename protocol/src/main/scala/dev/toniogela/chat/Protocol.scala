@@ -15,32 +15,16 @@ object Username:
 object UserQuit extends Exception with NoStackTrace
 
 object Protocol:
-  private val username: Codec[Username] = utf8_32.as[Username]
+  given Codec[Username] = utf8_32.as[Username]
 
-  enum ClientCommand:
+  enum ClientCommand derives Codec:
     case RequestUsername(name: Username)
     case SendMessage(value: String)
     case DirectMessage(name: Username, message: String)
 
-  object ClientCommand:
-    given Codec[ClientCommand] = discriminated[ClientCommand]
-      .by(uint8)
-      .typecase(1, username.as[RequestUsername])
-      .typecase(2, utf8_32.as[SendMessage])
-      .typecase(3, (username :: utf8_32).as[DirectMessage])
-
-  enum ServerCommand:
+  enum ServerCommand derives Codec:
     case SetUsername(name: Username)
     case Alert(text: String)
     case Message(name: Username, text: String)
     case DirectMessage(name: Username, message: String)
     case Disconnect
-
-  object ServerCommand:
-    given Codec[ServerCommand] = discriminated[ServerCommand]
-      .by(uint8)
-      .typecase(129, username.as[SetUsername])
-      .typecase(130, utf8_32.as[Alert])
-      .typecase(131, (username :: utf8_32).as[Message])
-      .singleton(132, Disconnect)
-      .typecase(133, (username :: utf8_32).as[DirectMessage])

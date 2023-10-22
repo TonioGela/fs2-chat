@@ -49,7 +49,6 @@ object Client:
       messageSocket: Server,
       printer: Printer
   ): Stream[IO, Unit] = messageSocket.read
-    .evalTap(m => IO.println(m))
     .evalMap {
       case ServerCommand.DirectMessage(name, message) => printer.privateMessage(name, message)
       case ServerCommand.Alert(txt)                   => printer.alert(txt)

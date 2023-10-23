@@ -31,9 +31,15 @@ object Printer:
 
       def errorln(msg: String): IO[Unit] = println(s"❌ $RED$msg$RESET")
 
+      private val ESC: String = "\u001B"
+
+      private val deleteLine: String = s"$ESC[2K"
+
+      private val upLine: String = s"$ESC[F"
+
       def readLine: IO[Option[String]] =
         stdinUtf8[IO](1024).take(1).compile.foldMonoid.map(_.trim.some.filterNot(_.isBlank))
-          .flatTap(_ => Console[IO].print("\u001B[F\u001B[2K"))
+          .flatTap(_ => Console[IO].print(s"$upLine$deleteLine"))
           .handleErrorWith { case t => Console[IO].errorln(t) >> t.raiseError }
     }
   }

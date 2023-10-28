@@ -2,7 +2,6 @@ package dev.toniogela.chat
 
 import cats.syntax.all.*
 import cats.effect.IO
-import cats.effect.std.Console
 import cats.effect.kernel.Ref
 import fs2.{Pull, Stream}
 import fs2.io.net.Socket
@@ -54,18 +53,11 @@ object Server:
       IO.println(s"ERROR: The client $username requested a new username: $name")
     case ClientCommand.SendMessage("/users") =>
       state.names.map(_.mkString(", ")).map(ServerCommand.Alert(_)).flatMap(send)
-    case ClientCommand.SendMessage("/quit")  => send(ServerCommand.Disconnect) >>
-        IO.raiseError(UserQuit)
     case ClientCommand.SendMessage(message)  =>
       state.broadcast(ServerCommand.Message(username, message))
   }.onFinalize(
     state.unregister(username) >> state.broadcast(ServerCommand.Alert(s"$username disconnected"))
-  ).handleErrorWith {
-    case UserQuit => Stream.exec(Console[IO].println(s"Client quit $username"))
-    case err      => Stream.exec(
-        Console[IO].errorln(s"Fatal error for $username") >> Console[IO].printStackTrace(err)
-      )
-  }
+  )
 
   def start(state: State, stream: Stream[IO, Socket[IO]]): Stream[IO, Unit] = stream
     .evalMap(MessageSocket[ClientCommand, ServerCommand](_))

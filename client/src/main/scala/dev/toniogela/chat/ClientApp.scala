@@ -11,6 +11,6 @@ object ClientApp extends CommandIOApp("fs2chat-client", "Fs2 powered TCP chat cl
   def main = username.map: username =>
     for
       printer <- Printer.create
-      address  = SocketAddress(host"scala.show", port"5555")
+      address  = SocketAddress(ip"0.0.0.0", port"5555")
       _       <- Client.connectAndHandle(address, username, printer).compile.drain
     yield ExitCode.Success

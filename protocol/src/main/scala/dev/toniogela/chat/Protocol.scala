@@ -1,9 +1,6 @@
 package dev.toniogela.chat
 
 import scodec.Codec
-import scala.util.control.NoStackTrace
-
-object UserQuit extends Exception with NoStackTrace
 
 object Protocol:
   enum ClientCommand derives Codec:
@@ -14,4 +11,3 @@ object Protocol:
     case SetUsername(name: String)
     case Alert(text: String)
     case Message(name: String, text: String)
-    case Disconnect

@@ -4,7 +4,6 @@ import fs2.*
 import fs2.io.net.Network
 import Protocol.*
 import cats.effect.*
-import cats.syntax.all.*
 import com.comcast.ip4s.*
 
 object Client:
@@ -35,6 +34,5 @@ object Client:
       case ServerCommand.SetUsername(username)  => printer.alert("Assigned username: " + username)
       case ServerCommand.Alert(txt)             => printer.alert(txt)
       case ServerCommand.Message(username, txt) => printer.println(s"$username> $txt")
-      case ServerCommand.Disconnect             => UserQuit.raiseError[IO, Unit]
 
 end Client

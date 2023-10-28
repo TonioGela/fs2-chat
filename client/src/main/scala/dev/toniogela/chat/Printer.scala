@@ -10,7 +10,7 @@ import scala.Console.{BLUE, GREEN, MAGENTA, RED, RESET}
 trait Printer:
   def println(msg: String): IO[Unit]
   def info(msg: String): IO[Unit]
-  def privateMessage(username: Username, message: String): IO[Unit]
+  def privateMessage(username: String, message: String): IO[Unit]
   def alert(msg: String): IO[Unit]
   def errorln(msg: String): IO[Unit]
   def readLine: IO[Option[String]]
@@ -26,8 +26,8 @@ object Printer:
 
       def alert(msg: String): IO[Unit] = println(s"📢 $GREEN$msg$RESET")
 
-      def privateMessage(username: Username, message: String) =
-        println(s"$MAGENTA${username.name} says: $message$RESET")
+      def privateMessage(username: String, message: String) =
+        println(s"$MAGENTA$username says: $message$RESET")
 
       def errorln(msg: String): IO[Unit] = println(s"❌ $RED$msg$RESET")
 
@@ -43,6 +43,3 @@ object Printer:
           .handleErrorWith { case t => Console[IO].errorln(t) >> t.raiseError }
     }
   }
-
-  extension (io: IO[Unit])
-    inline def stream: Stream[IO, Unit] = Stream.exec(io)

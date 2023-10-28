@@ -25,7 +25,8 @@ object Utils {
 
     def native: Project = p.enablePlugins(ScalaNativePlugin).disablePlugins(RevolverPlugin)
       .settings(nativeConfig ~= {
-        _.withLTO(LTO.full).withGC(GC.commix).withMode(Mode.releaseSize)
+        identity
+        // _.withLTO(LTO.full).withGC(GC.commix).withMode(Mode.releaseSize)
       }).settings(
         Compile / nativeLink := {
           val file: File = (Compile / nativeLink).value

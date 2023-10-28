@@ -6,12 +6,10 @@ import fs2.Stream
 import fs2.io.net.Socket
 import fs2.interop.scodec.{StreamDecoder, StreamEncoder}
 import scodec.{Decoder, Encoder}
-import com.comcast.ip4s.*
 
 trait MessageSocket[In, Out]:
   def read: Stream[IO, In]
   def write(out: Out): IO[Unit]
-  def address: IO[SocketAddress[IpAddress]]
 
 object MessageSocket:
 
@@ -20,7 +18,7 @@ object MessageSocket:
   ): IO[MessageSocket[In, Out]] = Queue.bounded[IO, Out](1024).map: outgoing =>
     new MessageSocket[In, Out] {
 
-      def read: Stream[IO, In]                  =
+      def read: Stream[IO, In]      =
         val readSocket: Stream[IO, In] = socket.reads
           .through(StreamDecoder.many(Decoder[In]).toPipeByte[IO])
 
@@ -30,6 +28,5 @@ object MessageSocket:
           .through(socket.writes)
 
         readSocket.concurrently(writeOutput)
-      def write(out: Out): IO[Unit]             = outgoing.offer(out)
-      def address: IO[SocketAddress[IpAddress]] = socket.remoteAddress
+      def write(out: Out): IO[Unit] = outgoing.offer(out)
     }
